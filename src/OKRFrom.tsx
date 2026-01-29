@@ -1,13 +1,11 @@
 import './App.css'
 import {useState} from "react";
 import * as React from "react";
-import type {keyValues} from "./types/OKR_Types.ts";
 import KeyResultList from "./components/keyResultList.tsx";
 import KeyResultForm from "./components/keyResultForm.tsx";
 
 function OKRFrom() {
     const [objectiveState, setObjectiveState] = useState('');
-    const [keyResultList, setKeyResultList] = useState<keyValues[]>([]);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -29,10 +27,11 @@ function OKRFrom() {
                         className="border rounded px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
                         value={objectiveState}
                         name={"Values"}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {e.target.value = objectiveState}}
                     />
                 </div>
 
-                <KeyResultForm setKeyResultList={setKeyResultList} />
+                <KeyResultForm/>
 
                 <div className="flex gap-3 mt-2">
                     <button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
@@ -44,7 +43,7 @@ function OKRFrom() {
                         Clear
                     </button>
                 </div>
-                <KeyResultList keyResultList = {keyResultList}/>
+                <KeyResultList/>
 
             </form>
         </div>

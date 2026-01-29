@@ -1,9 +1,11 @@
-import type { keyValues } from '../types/OKR_Types'
+import {useContext} from "react";
+import {KeyResultContext} from "../contexts/KeyResultProvider.tsx";
 
 
 
-const KeyResultList = ({keyResultList}: {keyResultList: keyValues[]}) => {
-  return (
+const KeyResultList = () => {
+    const {keyResultList} = useContext(KeyResultContext)
+    return (
         <div className="mt-2">
             <ul className="list-disc list-inside">
                 {Array.isArray(keyResultList) && keyResultList.map((keyResult, index) => (

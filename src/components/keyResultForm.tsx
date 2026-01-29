@@ -1,17 +1,16 @@
 import type {keyValues} from "../types/OKR_Types.ts";
-import {useState} from "react";
-import * as React from "react";
+import {useContext, useState} from "react";
+import  {KeyResultContext} from "../contexts/KeyResultProvider.tsx";
 
-type KeyResultFormProps = {
-    setKeyResultList: React.Dispatch<React.SetStateAction<keyValues[]>>;
-};
 
-const KeyResultForm = ({setKeyResultList }:KeyResultFormProps) => {
+const KeyResultForm = () => {
 
     const [keyResult, setKeyResult] = useState<keyValues>({
         Values: '',
         progress : ''
     });
+
+    const {setKeyResultList} = useContext(KeyResultContext)
 
     return (
 
@@ -19,6 +18,7 @@ const KeyResultForm = ({setKeyResultList }:KeyResultFormProps) => {
                 <label className="text-sm font-medium">Key Result</label>
 
                 <input
+                    required={true}
                     placeholder="Enter the key result"
                     className="border rounded px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
                     value={keyResult.Values}
@@ -26,6 +26,8 @@ const KeyResultForm = ({setKeyResultList }:KeyResultFormProps) => {
                 />
                 <label className="text-sm font-medium">Progress</label>
                 <input
+                    required={true}
+                    type="number"
                     placeholder="Enter the key result"
                     className="border rounded px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500"
                     value={keyResult.progress}
