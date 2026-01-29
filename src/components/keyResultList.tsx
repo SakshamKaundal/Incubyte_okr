@@ -1,19 +1,23 @@
-import {useContext} from "react";
-import {KeyResultContext} from "../contexts/KeyResultProvider.tsx";
-
-
+import { useContext } from "react";
+import { KeyResultContext } from "../contexts/KeyResultProvider.tsx";
 
 const KeyResultList = () => {
-    const {keyResultList} = useContext(KeyResultContext)
-    return (
-        <div className="mt-2">
-            <ul className="list-disc list-inside">
-                {Array.isArray(keyResultList) && keyResultList.map((keyResult, index) => (
-                    <li key={index} className="text-gray-700">{keyResult.Values} {keyResult.progress}%</li>
-                ))}
-            </ul>
-    </div>
-  )
-}
+  const { keyResultList } = useContext(KeyResultContext);
 
-export default KeyResultList
+  if (!Array.isArray(keyResultList) || keyResultList.length === 0) return null;
+
+  return (
+    <ul className="mt-3 space-y-2">
+      {keyResultList.map((keyResult, index) => (
+        <li
+          key={index}
+          className="rounded border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-800"
+        >
+          {keyResult.Values} — <span className="font-medium">{keyResult.progress}%</span>
+        </li>
+      ))}
+    </ul>
+  );
+};
+
+export default KeyResultList;
