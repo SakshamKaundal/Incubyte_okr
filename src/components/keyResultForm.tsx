@@ -1,16 +1,16 @@
-import type {keyValues} from "../types/OKR_Types.ts";
+import type {keyResult} from "../types/OKR_Types.tsx";
 import {useContext, useState} from "react";
 import  {KeyResultContext} from "../contexts/KeyResultProvider.tsx";
 import { BookCheckIcon, ChartNoAxesCombinedIcon } from "lucide-react";
 
 
 const KeyResultForm = () => {
-    const [keyResult, setKeyResult] = useState<keyValues>({ Values: '', progress: '' });
+    const [keyResult, setKeyResult] = useState<keyResult>({ description: '', progress: '' });
     const [error, setError] = useState('');
     const { setKeyResultList } = useContext(KeyResultContext);
 
     const handleAdd = () => {
-        if (!keyResult.Values.trim()) {
+        if (!keyResult.description.trim()) {
             setError('Key result is required');
             return;
         }
@@ -20,8 +20,8 @@ const KeyResultForm = () => {
             return;
         }
         setError('');
-        setKeyResultList((list: keyValues[]) => [...list, keyResult]);
-        setKeyResult({ Values: '', progress: '' });
+        setKeyResultList((list: keyResult[]) => [...list, keyResult]);
+        setKeyResult({ description: '', progress: '' });
     };
 
     return (
@@ -33,9 +33,9 @@ const KeyResultForm = () => {
             <input
                 placeholder="Enter the key result"
                 className={`border rounded rounded-2xl px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 ${error ? 'border-red-500' : ''}`}
-                value={keyResult.Values}
+                value={keyResult.description}
                 onChange={(e) => {
-                    setKeyResult((prev) => ({ ...prev, Values: e.target.value }));
+                    setKeyResult((prev) => ({ ...prev, description: e.target.value }));
                     setError('');
                 }}
             />
