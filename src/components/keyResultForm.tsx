@@ -32,7 +32,7 @@ const KeyResultForm = () => {
             </div>
             <input
                 placeholder="Enter the key result"
-                className={`border rounded rounded-2xl px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 ${error ? 'border-red-500' : ''}`}
+                className={`border rounded-2xl px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 ${error ? 'border-red-500' : ''}`}
                 value={keyResult.Values}
                 onChange={(e) => {
                     setKeyResult((prev) => ({ ...prev, Values: e.target.value }));
