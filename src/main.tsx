@@ -1,14 +1,13 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import OKRFrom from './OKRFrom.tsx'
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import "./index.css";
 import KeyResultProvider from "./contexts/KeyResultProvider.tsx";
+import Home from "@/Home.tsx";
 
-createRoot(document.getElementById('root')!).render(
+createRoot(document.getElementById("root")!).render(
   <StrictMode>
-      <KeyResultProvider>
-          <OKRFrom />
-      </KeyResultProvider>
+    <KeyResultProvider>
+      <Home />
+    </KeyResultProvider>
   </StrictMode>,
-
-)
+);
