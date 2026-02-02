@@ -7,7 +7,7 @@ const Home = () => {
   const [okrList, setOkrList] = useState([]);
 
   const fetchOkrs = async () => {
-    fetch("http://localhost:3000/okrs")
+    fetch("http://localhost:3002/objectives")
       .then((res) => res.json())
       .then((data) => setOkrList(data));
   };
@@ -33,7 +33,7 @@ const Home = () => {
         </button>
       ) : null}
 
-      <OkrsDisplay okrs={okrList} />
+      <OkrsDisplay okrs={okrList} onSuccess={fetchOkrs} />
       <Modal isOpen={isOpen}>
         <OKRForm
           onClose={() => {

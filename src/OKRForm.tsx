@@ -26,7 +26,7 @@ function OKRForm({ onClose, onSuccess }: OKRFormProps) {
     setError("");
     console.log(objectiveState, keyResult);
 
-    fetch("http://localhost:3000/okrs", {
+    fetch("http://localhost:3002/objectives", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

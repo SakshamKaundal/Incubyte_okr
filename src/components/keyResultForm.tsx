@@ -5,6 +5,7 @@ import { BookCheckIcon, ChartNoAxesCombinedIcon } from "lucide-react";
 
 const KeyResultForm = () => {
   const [keyResult, setKeyResult] = useState<keyValues>({
+    id: 0,
     Values: "",
     progress: "",
   });
@@ -22,8 +23,11 @@ const KeyResultForm = () => {
       return;
     }
     setError("");
-    setKeyResultList((list: keyValues[]) => [...list, keyResult]);
-    setKeyResult({ Values: "", progress: "" });
+    setKeyResultList((list: keyValues[]) => [
+      ...list,
+      { ...keyResult, id: Date.now() },
+    ]);
+    setKeyResult({ id: 0, Values: "", progress: "" });
   };
 
   return (

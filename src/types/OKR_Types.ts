@@ -1,4 +1,5 @@
 export type keyValues = {
+  id: number;
   Values: string;
   progress: string;
 };
