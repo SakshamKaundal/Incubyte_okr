@@ -3,13 +3,33 @@ import Modal from "@/components/Modal.tsx";
 import { useEffect, useState } from "react";
 import OkrsDisplay from "@/components/OkrsDisplay.tsx";
 
+//please fix this after TODO
+type ork = {
+  id: number;
+  title: string;
+};
+
 const Home = () => {
   const [okrList, setOkrList] = useState([]);
 
   const fetchOkrs = async () => {
-    fetch("http://localhost:3002/objectives")
+    fetch("http://localhost:3002/objectives", {
+      method: "GET",
+      headers: {
+        Authorization: "HEllo",
+      },
+    })
       .then((res) => res.json())
-      .then((data) => setOkrList(data));
+      .then((data) => {
+        const res = data.map((item: ork) => {
+          return {
+            id: item.id,
+            Objectives: item.title,
+            keyValues: [],
+          };
+        });
+        setOkrList(res);
+      });
   };
 
   useEffect(() => {

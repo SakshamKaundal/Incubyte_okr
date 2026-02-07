@@ -1,5 +1,5 @@
 import type { OkrTypes } from "@/types/OKR_Types.ts";
-import { ArchiveX } from "lucide-react";
+import { Trash2 } from "lucide-react";
 
 type OKRProps = {
   okrs: OkrTypes[];
@@ -12,7 +12,6 @@ const OkrsDisplay = ({ okrs, onSuccess }: OKRProps) => {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        // 'Authorization': 'Bearer your-token' // If required
       },
     })
       .then((response) => {
@@ -37,7 +36,7 @@ const OkrsDisplay = ({ okrs, onSuccess }: OKRProps) => {
             className="absolute top-3 right-3 text-red-500"
             onClick={() => handleDelete(okr.id)}
           >
-            <ArchiveX />
+            <Trash2 />
           </button>
 
           <h2 className="font-bold text-lg mb-2">{okr.Objectives}</h2>

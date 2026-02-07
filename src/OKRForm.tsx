@@ -32,7 +32,6 @@ function OKRForm({ onClose, onSuccess }: OKRFormProps) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        id: Date.now(),
         Objectives: objectiveState,
         keyValues: keyResult.keyResultList,
       }),
