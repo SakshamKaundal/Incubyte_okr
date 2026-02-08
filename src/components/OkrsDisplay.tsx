@@ -7,22 +7,32 @@ type OKRProps = {
 };
 
 const OkrsDisplay = ({ okrs, onSuccess }: OKRProps) => {
-  const handleDelete = (id: number) => {
-    fetch(`http://localhost:3002/objectives/${id}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => {
-        if (response.ok) {
-          onSuccess();
-          console.log("Resource deleted successfully");
-        } else {
-          console.error("Failed to delete");
-        }
-      })
-      .catch((error) => console.error("Error:", error));
+  if (!okrs || !Array.isArray(okrs)) {
+    return <div className="p-4">No OKRs to display</div>;
+  }
+  const handleDelete = async (e: React.MouseEvent, id: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const url = `http://localhost:3000/objectives/${id}`;
+    try {
+      const response = await fetch(url, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        onSuccess();
+      } else {
+        const errorData = await response.json().catch(() => ({}));
+        console.error("Failed to delete:", response.status, errorData);
+        alert(`Failed to delete OKR: ${response.status} ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error("Error deleting OKR:", error);
+      alert("Error deleting OKR. Please check the console for details.");
+    }
   };
 
   return (
@@ -33,23 +43,26 @@ const OkrsDisplay = ({ okrs, onSuccess }: OKRProps) => {
           className="relative border rounded-xl p-4 shadow-sm bg-white"
         >
           <button
-            className="absolute top-3 right-3 text-red-500"
-            onClick={() => handleDelete(okr.id)}
+            type="button"
+            className="absolute top-3 right-3 z-10 text-red-500 hover:text-red-700 transition-colors cursor-pointer"
+            onClick={(e) => handleDelete(e, okr.id)}
+            onPointerDown={(e) => e.stopPropagation()}
+            aria-label="Delete OKR"
           >
             <Trash2 />
           </button>
 
-          <h2 className="font-bold text-lg mb-2">{okr.Objectives}</h2>
+          <h2 className="font-bold text-lg mb-2">{okr.title}</h2>
 
           <div className="space-y-2">
-            {okr.keyValues.map((kr, index) => (
+            {okr.keyResults?.map((kr, index) => (
               <label
                 key={index}
                 className="flex items-center gap-2 text-sm text-gray-700"
               >
                 <input type="checkbox" className="accent-blue-500" />
                 <span>
-                  {kr.Values}
+                  {kr.description}
                   <span className="text-gray-400 ml-2">({kr.progress})</span>
                 </span>
               </label>

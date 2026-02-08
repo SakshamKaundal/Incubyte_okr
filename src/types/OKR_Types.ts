@@ -1,11 +1,12 @@
-export type keyValues = {
+export type KeyResult = {
   id: number;
-  Values: string;
-  progress: string;
+  description: string;
+  progress: number;
+  isCompleted: boolean;
 };
 
 export type OkrTypes = {
   id: number;
-  Objectives: string;
-  keyValues: keyValues[];
+  title: string;
+  keyResults: KeyResult[];
 };

@@ -1,9 +1,9 @@
 import React, { createContext, type ReactNode, useState } from "react";
-import type { keyValues } from "../types/OKR_Types.ts";
+import type { KeyResult } from "../types/OKR_Types.ts";
 
 type KeyResultContextType = {
-  keyResultList: keyValues[];
-  setKeyResultList: React.Dispatch<React.SetStateAction<keyValues[]>>;
+  keyResultList: KeyResult[];
+  setKeyResultList: React.Dispatch<React.SetStateAction<KeyResult[]>>;
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -17,7 +17,7 @@ type KeyResultProviderProps = {
 };
 
 const KeyResultProvider = ({ children }: KeyResultProviderProps) => {
-  const [keyResultList, setKeyResultList] = useState<keyValues[]>([]);
+  const [keyResultList, setKeyResultList] = useState<KeyResult[]>([]);
   return (
     <KeyResultContext.Provider value={{ keyResultList, setKeyResultList }}>
       {children}

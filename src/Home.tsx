@@ -2,34 +2,32 @@ import OKRForm from "@/OKRForm.tsx";
 import Modal from "@/components/Modal.tsx";
 import { useEffect, useState } from "react";
 import OkrsDisplay from "@/components/OkrsDisplay.tsx";
+import type { KeyResult, OkrTypes } from "@/types/OKR_Types.ts";
 
 //please fix this after TODO
-type ork = {
-  id: number;
-  title: string;
-};
+// type ork = {
+//   id: number;
+//   title: string;
+// };
 
 const Home = () => {
   const [okrList, setOkrList] = useState([]);
-
   const fetchOkrs = async () => {
-    fetch("http://localhost:3002/objectives", {
-      method: "GET",
-      headers: {
-        Authorization: "HEllo",
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        const res = data.map((item: ork) => {
-          return {
-            id: item.id,
-            Objectives: item.title,
-            keyValues: [],
-          };
-        });
-        setOkrList(res);
-      });
+    const res = await fetch("http://localhost:3000/objectives");
+    const data = await res.json();
+    console.log(data)
+    const mapped = data.map((item: OkrTypes) => ({
+      id: item.id,
+      title: item.title,
+      keyResults: item.keyResults?.map((kr: KeyResult) => ({
+        id: kr.id,
+        description: kr.description,
+        progress: kr.progress,
+        isCompleted: kr.isCompleted,
+      })) ?? [],
+    }));
+
+    setOkrList(mapped);
   };
 
   useEffect(() => {

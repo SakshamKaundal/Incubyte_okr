@@ -26,14 +26,17 @@ function OKRForm({ onClose, onSuccess }: OKRFormProps) {
     setError("");
     console.log(objectiveState, keyResult);
 
-    fetch("http://localhost:3002/objectives", {
+    fetch("http://localhost:3000/objectives", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        Objectives: objectiveState,
-        keyValues: keyResult.keyResultList,
+        title: objectiveState,
+        keyResult: keyResult.keyResultList.map(kr => ({
+          description: kr.description,
+          progress: (kr.progress) || 0
+        })),
       }),
     })
       .then((res) => {
