@@ -7,7 +7,7 @@ type ModalProps = {
 
 const Modal = ({ children, isOpen }: ModalProps) => {
   if (!isOpen) {
-    return;
+    return null;
   }
 
   return (

@@ -1,18 +1,19 @@
 import type { OkrTypes } from "@/types/OKR_Types.ts";
-import { Trash2 } from "lucide-react";
+import { Trash2,Hammer } from "lucide-react";
 
-type OKRProps = {
+export type OKRProps = {
   okrs: OkrTypes[];
   onSuccess: () => void;
+  onEdit: (okr: OkrTypes) => void;
 };
 
-const OkrsDisplay = ({ okrs, onSuccess }: OKRProps) => {
+const OkrsDisplay = ({ okrs, onSuccess,onEdit }: OKRProps) => {
   if (!okrs || !Array.isArray(okrs)) {
     return <div className="p-4">No OKRs to display</div>;
   }
   const handleDelete = async (e: React.MouseEvent, id: number) => {
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault();//look up TODO
+    e.stopPropagation();//look up 
     const url = `http://localhost:3000/objectives/${id}`;
     try {
       const response = await fetch(url, {
@@ -42,6 +43,17 @@ const OkrsDisplay = ({ okrs, onSuccess }: OKRProps) => {
           key={okr.id}
           className="relative border rounded-xl p-4 shadow-sm bg-white"
         >
+          
+          <button
+            type="button"
+            className="absolute top-3 right-11 z-10 text-blue-400 hover:text-blue-700 transition-colors cursor-pointer"
+            onClick={() => onEdit(okr)}
+            aria-label="EditOKR"
+          >
+            <Hammer />
+          </button>
+          
+          
           <button
             type="button"
             className="absolute top-3 right-3 z-10 text-red-500 hover:text-red-700 transition-colors cursor-pointer"
@@ -63,7 +75,7 @@ const OkrsDisplay = ({ okrs, onSuccess }: OKRProps) => {
                 <input type="checkbox" className="accent-blue-500" />
                 <span>
                   {kr.description}
-                  <span className="text-gray-400 ml-2">({kr.progress})</span>
+                  <span className="text-gray-400 ml-2">({kr.progress}%)</span>
                 </span>
               </label>
             ))}

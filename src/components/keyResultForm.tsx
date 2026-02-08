@@ -26,8 +26,8 @@ const KeyResultForm = () => {
     setError("");
     setKeyResultList((list: KeyResult[]) => [
       ...list,
-      { ...keyResult, id: Date.now() },
-    ]);
+      { ...keyResult, id: null }, // Draft items have no ID
+    ] as KeyResult[]);
     setKeyResult({ isCompleted: false, id: 0, description: "", progress: 0 });
   };
 
@@ -54,38 +54,38 @@ const KeyResultForm = () => {
         <label className="text-sm font-bold">Progress</label>
       </div>
       <input
-  type="number"
-  min={0}
-  max={100}
-  placeholder="0–100"
-  className={`border rounded-2xl px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 ${
-    error ? "border-red-500" : ""
-  }`}
-  value={keyResult.progress}
-  onChange={(e) => {
-    const raw = e.target.value;
+        type="number"
+        min={0}
+        max={100}
+        placeholder="0–100"
+        className={`border rounded-2xl px-3 py-2 outline-none focus:ring-2 focus:ring-blue-500 ${
+          error ? "border-red-500" : ""
+        }`}
+        value={keyResult.progress}
+        onChange={(e) => {
+          const raw = e.target.value;
 
-    // allow empty input (user is typing)
-    if (raw === "") {
-      setKeyResult((prev) => ({ ...prev, progress: 0 }));
-      setError("");
-      return;
-    }
+          // allow empty input (user is typing)
+          if (raw === "") {
+            setKeyResult((prev) => ({ ...prev, progress: 0 }));
+            setError("");
+            return;
+          }
 
-    const value = Number(raw);
+          const value = Number(raw);
 
-    if (Number.isNaN(value)) return;
+          if (Number.isNaN(value)) return;
 
-    const clamped = Math.min(100, Math.max(0, value));
+          const clamped = Math.min(100, Math.max(0, value));
 
-    setKeyResult((prev) => ({
-      ...prev,
-      progress: clamped,
-    }));
+          setKeyResult((prev) => ({
+            ...prev,
+            progress: clamped,
+          }));
 
-    setError("");
-  }}
-/>
+          setError("");
+        }}
+      />
 
       {error && <span className="text-sm text-red-500">{error}</span>}
       <button

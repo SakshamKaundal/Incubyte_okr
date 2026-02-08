@@ -1,62 +1,91 @@
 import "./App.css";
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import * as React from "react";
 import KeyResultForm from "./components/keyResultForm.tsx";
 import KeyResultList from "./components/keyResultList.tsx";
 import { KeyResultContext } from "./contexts/KeyResultProvider.tsx";
 import { CircleCheckBigIcon } from "lucide-react";
 import incubyteLogo from "./assets/incubyteLogo.png";
+import type { OkrTypes } from "./types/OKR_Types.ts";
 
 type OKRFormProps = {
   onClose: () => void;
   onSuccess: () => void;
+  editData?: OkrTypes;
 };
 
-function OKRForm({ onClose, onSuccess }: OKRFormProps) {
+function OKRForm({ onClose, onSuccess, editData }: OKRFormProps) {
   const [objectiveState, setObjectiveState] = useState("");
   const [error, setError] = useState("");
+  const [isEditMode, setIsEditMode] = useState(false);
   const keyResult = useContext(KeyResultContext);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    if (editData) {
+      setIsEditMode(true);
+      setObjectiveState(editData.title);
+      keyResult.setKeyResultList(editData.keyResults || []);
+    } else {
+      setIsEditMode(false);
+      setObjectiveState("");
+      keyResult.setKeyResultList([]);
+    }
+  }, [editData]);
+
+const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!objectiveState.trim()) {
       setError("Objective is required");
       return;
     }
     setError("");
-    console.log(objectiveState, keyResult);
+    
+    console.log("Submitting:", {
+      objectiveState,
+      keyResultList: keyResult.keyResultList,
+      isEditMode
+    });
 
-    fetch("http://localhost:3000/objectives", {
-      method: "POST",
+    const url = isEditMode 
+      ? `http://localhost:3000/objectives/${editData?.id}`
+      : "http://localhost:3000/objectives";
+    
+    const method = isEditMode ? "PATCH" : "POST";
+
+    const requestData = {
+      title: objectiveState
+    };
+
+    console.log("API Call:", { url, method, requestData });
+
+    fetch(url, {
+      method: method,
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        title: objectiveState,
-        keyResult: keyResult.keyResultList.map(kr => ({
-          description: kr.description,
-          progress: (kr.progress) || 0
-        })),
-      }),
+      body: JSON.stringify(requestData),
     })
       .then((res) => {
+        console.log("Response status:", res.status);
         if (!res.ok) {
-          throw new Error("Failed to create OKR");
+          throw new Error(`Failed to ${isEditMode ? "update" : "create"} OKR`);
         }
         onSuccess();
         return res.json();
       })
       .then((data) => {
-        console.log("Saved OKR:", data);
+        console.log(`${isEditMode ? "Updated" : "Saved"} OKR:`, data);
       })
       .catch((err) => {
-        console.error(err);
+        console.error("API Error:", err);
+        setError("Failed to save OKR");
       });
   };
 
   const handleClear = () => {
     setObjectiveState("");
     setError("");
+    keyResult.setKeyResultList([]);
   };
 
   return (
@@ -78,7 +107,7 @@ function OKRForm({ onClose, onSuccess }: OKRFormProps) {
           alt="Incubyte"
           className=" h-10 w-auto object-contain"
         />
-        <h1 className="text-2xl font-bold text-center">OKR</h1>
+        <h1 className="text-2xl font-bold text-center">{isEditMode ? "Edit OKR" : "OKR"}</h1>
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-1">
             <CircleCheckBigIcon className="w-5 h-5 text-blue-500" />
@@ -100,12 +129,14 @@ function OKRForm({ onClose, onSuccess }: OKRFormProps) {
 
         <KeyResultForm />
 
+        <KeyResultList isEditMode={isEditMode} />
+
         <div className="flex gap-3 mt-2">
           <button
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-all duration-200 hover:scale-105 active:scale-95"
             type="submit"
           >
-            Submit
+            {isEditMode ? "Update" : "Submit"}
           </button>
           <button
             type="button"
@@ -115,7 +146,6 @@ function OKRForm({ onClose, onSuccess }: OKRFormProps) {
             Clear
           </button>
         </div>
-        <KeyResultList />
       </form>
     </div>
   );

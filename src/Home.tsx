@@ -4,27 +4,25 @@ import { useEffect, useState } from "react";
 import OkrsDisplay from "@/components/OkrsDisplay.tsx";
 import type { KeyResult, OkrTypes } from "@/types/OKR_Types.ts";
 
-//please fix this after TODO
-// type ork = {
-//   id: number;
-//   title: string;
-// };
-
 const Home = () => {
   const [okrList, setOkrList] = useState([]);
+  const [editingOkr, setEditingOkr] = useState<OkrTypes | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+
   const fetchOkrs = async () => {
     const res = await fetch("http://localhost:3000/objectives");
     const data = await res.json();
-    console.log(data)
+    console.log(data);
     const mapped = data.map((item: OkrTypes) => ({
       id: item.id,
       title: item.title,
-      keyResults: item.keyResults?.map((kr: KeyResult) => ({
-        id: kr.id,
-        description: kr.description,
-        progress: kr.progress,
-        isCompleted: kr.isCompleted,
-      })) ?? [],
+      keyResults:
+        item.keyResults?.map((kr: KeyResult) => ({
+          id: kr.id,
+          description: kr.description,
+          progress: kr.progress,
+          isCompleted: kr.isCompleted,
+        })) ?? [],
     }));
 
     setOkrList(mapped);
@@ -35,8 +33,6 @@ const Home = () => {
       console.log(r);
     });
   }, []);
-
-  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <>
@@ -51,13 +47,26 @@ const Home = () => {
         </button>
       ) : null}
 
-      <OkrsDisplay okrs={okrList} onSuccess={fetchOkrs} />
+      <OkrsDisplay
+        okrs={okrList}
+        onSuccess={fetchOkrs}
+        onEdit={(okr) => {
+          setEditingOkr(okr);
+          setIsOpen(true);
+        }}
+      />
       <Modal isOpen={isOpen}>
         <OKRForm
+          editData={editingOkr || undefined}
           onClose={() => {
             setIsOpen(false);
+            setEditingOkr(null);
           }}
-          onSuccess={fetchOkrs}
+          onSuccess={() => {
+            fetchOkrs();
+            setIsOpen(false);
+            setEditingOkr(null);
+          }}
         />
       </Modal>
     </>
