@@ -3,7 +3,11 @@ export type KeyResult = {
   description: string;
   progress: number;
   isCompleted: boolean;
+  current?: number;
+  target?: number;
+  metric?: string;
 };
+
 
 export type OkrTypes = {
   id: number;

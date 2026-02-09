@@ -1,9 +1,6 @@
 import "./App.css";
-import { useContext, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import * as React from "react";
-import KeyResultForm from "./components/keyResultForm.tsx";
-import KeyResultList from "./components/keyResultList.tsx";
-import { KeyResultContext } from "./contexts/KeyResultProvider.tsx";
 import { CircleCheckBigIcon } from "lucide-react";
 import incubyteLogo from "./assets/incubyteLogo.png";
 import type { OkrTypes } from "./types/OKR_Types.ts";
@@ -18,17 +15,14 @@ function OKRForm({ onClose, onSuccess, editData }: OKRFormProps) {
   const [objectiveState, setObjectiveState] = useState("");
   const [error, setError] = useState("");
   const [isEditMode, setIsEditMode] = useState(false);
-  const keyResult = useContext(KeyResultContext);
 
   useEffect(() => {
     if (editData) {
       setIsEditMode(true);
       setObjectiveState(editData.title);
-      keyResult.setKeyResultList(editData.keyResults || []);
     } else {
       setIsEditMode(false);
       setObjectiveState("");
-      keyResult.setKeyResultList([]);
     }
   }, [editData]);
 
@@ -42,7 +36,6 @@ const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     
     console.log("Submitting:", {
       objectiveState,
-      keyResultList: keyResult.keyResultList,
       isEditMode
     });
 
@@ -85,7 +78,6 @@ const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
   const handleClear = () => {
     setObjectiveState("");
     setError("");
-    keyResult.setKeyResultList([]);
   };
 
   return (
@@ -107,11 +99,11 @@ const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
           alt="Incubyte"
           className=" h-10 w-auto object-contain"
         />
-        <h1 className="text-2xl font-bold text-center">{isEditMode ? "Edit OKR" : "OKR"}</h1>
+        <h1 className="text-2xl font-bold text-center">{isEditMode ? "Edit OKR" : "Add A New Objective"}</h1>
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-1">
             <CircleCheckBigIcon className="w-5 h-5 text-blue-500" />
-            <label className="text-sm font-bold">objectives</label>
+            <label className="text-sm font-bold">Objective</label>
           </div>
 
           <input
@@ -126,17 +118,12 @@ const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
           />
           {error && <span className="text-sm text-red-500">{error}</span>}
         </div>
-
-        <KeyResultForm />
-
-        <KeyResultList isEditMode={isEditMode} />
-
         <div className="flex gap-3 mt-2">
           <button
             className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-all duration-200 hover:scale-105 active:scale-95"
             type="submit"
           >
-            {isEditMode ? "Update" : "Submit"}
+            {isEditMode ? "Update" : "Add"}
           </button>
           <button
             type="button"
