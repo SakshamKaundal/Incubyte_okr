@@ -9,7 +9,7 @@ export type OKRProps = {
   onUpdateKeyResultCurrent: (
     objectiveId: number,
     keyResultId: number | null,
-    value: number,
+    value: number
   ) => void;
 };
 
@@ -46,7 +46,7 @@ const OkrsDisplay = ({
         const errorData = await response.json().catch(() => ({}));
         console.error("Failed to delete:", response.status, errorData);
         alert(
-          `Failed to delete OKR: ${response.status} ${response.statusText}`,
+          `Failed to delete OKR: ${response.status} ${response.statusText}`
         );
       }
     } catch (error) {
@@ -63,22 +63,26 @@ const OkrsDisplay = ({
             ? 0
             : Math.round(
                 objective.keyResults.reduce((sum, keyResult) => {
-                  const hasTarget =
-                    keyResult.target && keyResult.target > 0;
+                  const hasTarget = keyResult.target && keyResult.target > 0;
                   const progressValue = hasTarget
                     ? getProgressPercent(
                         keyResult.current ?? 0,
-                        keyResult.target ?? 0,
+                        keyResult.target ?? 0
                       )
                     : (keyResult.progress ?? 0);
                   return sum + progressValue;
-                }, 0) / objective.keyResults.length,
+                }, 0) / objective.keyResults.length
               );
+        const isObjectiveComplete = objectiveProgressPercent >= 100;
 
         return (
           <div
             key={objective.id}
-            className="relative border rounded-xl p-4 shadow-sm bg-white"
+            className={`relative rounded-xl border-2 p-4 shadow-sm ${
+              isObjectiveComplete
+                ? "border-gray-300 bg-gray-50 text-gray-400"
+                : "border-green-400 bg-white"
+            }`}
           >
             <button
               type="button"
@@ -99,11 +103,21 @@ const OkrsDisplay = ({
               <Trash2 />
             </button>
 
-            <div className="mb-4 flex flex-wrap items-center gap-3 pr-16">
-              <h2 className="text-2xl font-extrabold tracking-tight">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3 pr-16">
+              <h2
+                className={`text-2xl font-extrabold tracking-tight ${
+                  isObjectiveComplete ? "text-gray-500" : "text-gray-900"
+                }`}
+              >
                 {objective.title}
               </h2>
-              <span className="inline-flex items-center rounded-full bg-black text-white text-base font-semibold px-4 py-2">
+              <span
+                className={`inline-flex items-center rounded-full text-base font-semibold px-4 py-2 ${
+                  isObjectiveComplete
+                    ? "bg-gray-200 text-gray-500"
+                    : "bg-black text-white"
+                }`}
+              >
                 {objectiveProgressPercent}%
               </span>
             </div>
@@ -116,16 +130,26 @@ const OkrsDisplay = ({
                 const progress =
                   target > 0
                     ? getProgressPercent(current, target)
-                    : keyResult.progress ?? 0;
+                    : (keyResult.progress ?? 0);
 
                 return (
                   <div
                     key={index}
-                    className="rounded-xl border border-gray-200 bg-gray-50 p-3"
+                    className={`rounded-xl border p-3 ${
+                      isObjectiveComplete
+                        ? "border-gray-200 bg-gray-100"
+                        : "border-gray-200 bg-gray-50"
+                    }`}
                   >
                     <div className="flex items-start justify-between">
                       <div>
-                        <p className="font-semibold">{keyResult.description}</p>
+                        <p
+                          className={`font-semibold ${
+                            isObjectiveComplete ? "text-gray-500" : "text-black"
+                          }`}
+                        >
+                          {keyResult.description}
+                        </p>
                         <p className="text-sm text-gray-500">
                           {current} / {target} {metric} ({progress}%)
                         </p>
@@ -134,20 +158,26 @@ const OkrsDisplay = ({
 
                     <div className="mt-2 h-2 rounded-full bg-gray-200 overflow-hidden">
                       <div
-                        className="h-full bg-black"
+                        className={`h-full ${
+                          isObjectiveComplete ? "bg-gray-300" : "bg-black"
+                        }`}
                         style={{ width: `${progress}%` }}
                       />
                     </div>
                     <input
                       type="number"
-                      className="mt-2 w-24 rounded-lg border px-2 py-1 text-sm"
+                      className={`mt-2 w-24 rounded-lg border px-2 py-1 text-sm ${
+                        isObjectiveComplete
+                          ? "border-gray-300 text-gray-500"
+                          : "border-gray-300"
+                      }`}
                       value={current}
                       onChange={(event) => {
                         const newValue = Number(event.target.value) || 0;
                         onUpdateKeyResultCurrent(
                           objective.id,
                           keyResult.id,
-                          newValue,
+                          newValue
                         );
                       }}
                     />

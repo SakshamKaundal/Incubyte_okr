@@ -69,8 +69,8 @@ const Home = () => {
   }, []);
 
   return (
-    <>
-      <header className="px-4 pt-5">
+    <div className="mx-auto w-full max-w-3xl px-4 pb-10">
+      <header className="pt-5">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <img
@@ -174,7 +174,7 @@ const Home = () => {
         setTarget={setKeyResultTarget}
         setMetric={setKeyResultMetric}
       />
-    </>
+    </div>
   );
 };
 export default Home;
