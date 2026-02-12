@@ -11,11 +11,10 @@ const Modal = ({ children, isOpen }: ModalProps) => {
   }
 
   return (
-    <>
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
-        <h1>{children}</h1>
-      </div>
-    </>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      {children}
+    </div>
   );
 };
+
 export default Modal;

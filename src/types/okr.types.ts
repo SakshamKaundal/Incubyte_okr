@@ -1,14 +1,12 @@
 export type KeyResult = {
-  id: number | null;
+  id: number;
   description: string;
   progress: number;
-  isCompleted: boolean;
-  target?: number;
-  metric?: string;
+  target: number;
+  metric: string;
 };
 
-
-export type OkrTypes = {
+export type Objective = {
   id: number;
   title: string;
   keyResults: KeyResult[];

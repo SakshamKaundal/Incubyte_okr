@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import Modal from "../components/Modal";
+import Modal from "../components/ui/Modal";
 import { describe } from "vitest";
 import { it,expect } from "vitest";
 
