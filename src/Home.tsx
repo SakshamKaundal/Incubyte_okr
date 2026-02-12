@@ -14,14 +14,11 @@ const Home = () => {
   const [isObjectiveModalOpen, setIsObjectiveModalOpen] = useState(false);
 
   const [isKeyResultModalOpen, setIsKeyResultModalOpen] = useState(false);
-  const [keyResultObjective, setKeyResultObjective] =
-    useState<OkrTypes | null>(null);
-  const [keyResultTitle, setKeyResultTitle] = useState("");
-  const [keyResultCurrent, setKeyResultCurrent] = useState("");
-  const [keyResultTarget, setKeyResultTarget] = useState("");
-  const [keyResultMetric, setKeyResultMetric] = useState("");
+  const [keyResultObjectiveId, setKeyResultObjectiveId] = useState<
+    number | null
+  >(null);
 
-  const updateKeyResultCurrent = (
+  const updateKeyResultProgress = (
     objectiveId: number,
     keyResultId: number | null,
     value: number,
@@ -35,7 +32,7 @@ const Home = () => {
           ...objective,
           keyResults: objective.keyResults.map((keyResult) =>
             keyResult.id === keyResultId
-              ? { ...keyResult, current: value }
+              ? { ...keyResult, progress: value }
               : keyResult,
           ),
         };
@@ -43,29 +40,56 @@ const Home = () => {
     );
   };
 
-  const fetchObjectives = async () => {
+  const fetchObjectives = async (): Promise<OkrTypes[]> => {
     const res = await fetch("http://localhost:3000/objectives");
+    if (!res.ok) {
+      throw new Error(`Failed to fetch objectives: ${res.status}`);
+    }
     const data = await res.json();
-    console.log(data);
-    const mapped = data.map((item: OkrTypes) => ({
+    return data.map((item: OkrTypes) => ({
       id: item.id,
       title: item.title,
       keyResults:
         item.keyResults?.map((keyResult: KeyResult) => ({
           id: keyResult.id,
-          description: keyResult.description,
-          progress: keyResult.progress,
-          isCompleted: keyResult.isCompleted,
+          description: keyResult.description ?? "",
+          progress: keyResult.progress ?? 0,
+          isCompleted: keyResult.isCompleted ?? false,
+          target: keyResult.target ?? 0,
+          metric: keyResult.metric ?? "",
         })) ?? [],
     }));
-
-    setObjectives(mapped);
   };
 
+  const refreshObjectives = () =>
+    fetchObjectives()
+      .then((mapped) => {
+        setObjectives(mapped);
+        return mapped;
+      })
+      .catch((error) => {
+        console.error("Failed to fetch objectives:", error);
+        return [];
+      });
+
   useEffect(() => {
-    fetchObjectives().then((result) => {
-      console.log(result);
-    });
+    let cancelled = false;
+
+    fetchObjectives()
+      .then((mapped) => {
+        if (!cancelled) {
+          setObjectives(mapped);
+        }
+      })
+      .catch((error) => {
+        if (!cancelled) {
+          console.error("Failed to fetch objectives:", error);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   return (
@@ -102,30 +126,27 @@ const Home = () => {
 
       <OkrsDisplay
         objectives={objectives}
-        onSuccess={fetchObjectives}
+        onSuccess={refreshObjectives}
         onEdit={(objective) => {
           setEditingObjective(objective);
           setIsObjectiveModalOpen(true);
         }}
         onAddKeyResult={(objective) => {
-          setKeyResultObjective(objective);
-          setKeyResultTitle("");
-          setKeyResultCurrent("");
-          setKeyResultTarget("");
-          setKeyResultMetric("");
+          setKeyResultObjectiveId(objective.id);
           setIsKeyResultModalOpen(true);
         }}
-        onUpdateKeyResultCurrent={updateKeyResultCurrent}
+        onUpdateKeyResultProgress={updateKeyResultProgress}
       />
       <Modal isOpen={isObjectiveModalOpen}>
         <OKRForm
+          key={editingObjective?.id ?? "new"}
           editData={editingObjective || undefined}
           onClose={() => {
             setIsObjectiveModalOpen(false);
             setEditingObjective(null);
           }}
           onSuccess={() => {
-            fetchObjectives();
+            refreshObjectives();
             setIsObjectiveModalOpen(false);
             setEditingObjective(null);
           }}
@@ -134,45 +155,16 @@ const Home = () => {
 
       <KeyResultModal
         isOpen={isKeyResultModalOpen}
-        onClose={() => setIsKeyResultModalOpen(false)}
-        onSave={(data) => {
-          if (!keyResultObjective) return;
-
-          const current = Number(data.current) || 0;
-          const target = Number(data.target) || 0;
-          const progress = target > 0 ? Math.round((current / target) * 100) : 0;
-
-          const newKeyResult = {
-            id: Date.now(),
-            description: data.title,
-            progress,
-            isCompleted: target > 0 && current >= target,
-            current,
-            target,
-            metric: data.metric || "",
-          };
-
-          setObjectives((prev) =>
-            prev.map((objective) =>
-              objective.id === keyResultObjective.id
-                ? {
-                    ...objective,
-                    keyResults: [...objective.keyResults, newKeyResult],
-                  }
-                : objective,
-            ),
-          );
-
+        objectiveId={keyResultObjectiveId}
+        onClose={() => {
           setIsKeyResultModalOpen(false);
+          setKeyResultObjectiveId(null);
         }}
-        title={keyResultTitle}
-        current={keyResultCurrent}
-        target={keyResultTarget}
-        metric={keyResultMetric}
-        setTitle={setKeyResultTitle}
-        setCurrent={setKeyResultCurrent}
-        setTarget={setKeyResultTarget}
-        setMetric={setKeyResultMetric}
+        onSuccess={() => {
+          refreshObjectives();
+          setIsKeyResultModalOpen(false);
+          setKeyResultObjectiveId(null);
+        }}
       />
     </div>
   );

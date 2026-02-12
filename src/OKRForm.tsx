@@ -1,5 +1,5 @@
 import "./App.css";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import * as React from "react";
 import { CircleCheckBigIcon } from "lucide-react";
 import incubyteLogo from "./assets/incubyteLogo.png";
@@ -12,19 +12,9 @@ type OKRFormProps = {
 };
 
 function OKRForm({ onClose, onSuccess, editData }: OKRFormProps) {
-  const [objectiveState, setObjectiveState] = useState("");
+  const [objectiveState, setObjectiveState] = useState(editData?.title ?? "");
   const [error, setError] = useState("");
-  const [isEditMode, setIsEditMode] = useState(false);
-
-  useEffect(() => {
-    if (editData) {
-      setIsEditMode(true);
-      setObjectiveState(editData.title);
-    } else {
-      setIsEditMode(false);
-      setObjectiveState("");
-    }
-  }, [editData]);
+  const isEditMode = Boolean(editData);
 
 const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

@@ -6,7 +6,7 @@ export type OKRProps = {
   onSuccess: () => void;
   onEdit: (objective: OkrTypes) => void;
   onAddKeyResult: (objective: OkrTypes) => void;
-  onUpdateKeyResultCurrent: (
+  onUpdateKeyResultProgress: (
     objectiveId: number,
     keyResultId: number | null,
     value: number
@@ -23,7 +23,7 @@ const OkrsDisplay = ({
   onSuccess,
   onEdit,
   onAddKeyResult,
-  onUpdateKeyResultCurrent,
+  onUpdateKeyResultProgress,
 }: OKRProps) => {
   if (!objectives || !Array.isArray(objectives)) {
     return <div className="p-4">No OKRs to display</div>;
@@ -63,13 +63,10 @@ const OkrsDisplay = ({
             ? 0
             : Math.round(
                 objective.keyResults.reduce((sum, keyResult) => {
-                  const hasTarget = keyResult.target && keyResult.target > 0;
-                  const progressValue = hasTarget
-                    ? getProgressPercent(
-                        keyResult.current ?? 0,
-                        keyResult.target ?? 0
-                      )
-                    : (keyResult.progress ?? 0);
+                  const target = keyResult.target ?? 0;
+                  const current = keyResult.progress ?? 0;
+                  const progressValue =
+                    target > 0 ? getProgressPercent(current, target) : 0;
                   return sum + progressValue;
                 }, 0) / objective.keyResults.length
               );
@@ -124,13 +121,11 @@ const OkrsDisplay = ({
 
             <div className="space-y-2">
               {objective.keyResults?.map((keyResult, index) => {
-                const current = keyResult.current ?? 0;
+                const current = keyResult.progress ?? 0;
                 const target = keyResult.target ?? 0;
                 const metric = keyResult.metric ?? "";
                 const progress =
-                  target > 0
-                    ? getProgressPercent(current, target)
-                    : (keyResult.progress ?? 0);
+                  target > 0 ? getProgressPercent(current, target) : 0;
 
                 return (
                   <div
@@ -174,7 +169,7 @@ const OkrsDisplay = ({
                       value={current}
                       onChange={(event) => {
                         const newValue = Number(event.target.value) || 0;
-                        onUpdateKeyResultCurrent(
+                        onUpdateKeyResultProgress(
                           objective.id,
                           keyResult.id,
                           newValue
