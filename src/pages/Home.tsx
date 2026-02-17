@@ -3,6 +3,7 @@ import Modal from "@/components/ui/Modal";
 import ObjectiveForm from "@/components/features/ObjectiveForm";
 import ObjectivesList from "@/components/features/ObjectivesList";
 import KeyResultForm from "@/components/features/KeyResultForm";
+import AIGeneratorModal from "@/components/features/AIGeneratorModal";
 import type { Objective } from "@/types/okr.types";
 import incubyteLogo from "@/assets/incubyteLogo.png";
 
@@ -17,6 +18,7 @@ const Home = () => {
   const [keyResultObjectiveId, setKeyResultObjectiveId] = useState<
     number | null
   >(null);
+  const [isAIModalOpen, setIsAIModalOpen] = useState(false);
 
   const fetchObjectives = async () => {
     setIsLoading(true);
@@ -64,6 +66,11 @@ const Home = () => {
     setIsKeyResultModalOpen(true);
   };
 
+  const handleAIGeneratorSuccess = (newObjective: Objective) => {
+    setObjectives((prev) => [...prev, newObjective]);
+    setIsAIModalOpen(false);
+  };
+
   useEffect(() => {
     fetchObjectives();
   }, []);
@@ -96,6 +103,14 @@ const Home = () => {
         </div>
       </header>
 
+      <button
+        className="fixed bottom-8 right-8 flex items-center gap-2 bg-black text-white px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-105 active:scale-95 font-semibold text-sm"
+        onClick={() => setIsAIModalOpen(true)}
+      >
+        <span>✨</span>
+        AI OKR
+      </button>
+
       {isLoading ? (
         <div className="p-4 text-center text-gray-500">Loading...</div>
       ) : (
@@ -121,6 +136,12 @@ const Home = () => {
         objectiveId={keyResultObjectiveId}
         onClose={handleCloseKeyResultModal}
         onSuccess={handleKeyResultSuccess}
+      />
+
+      <AIGeneratorModal
+        isOpen={isAIModalOpen}
+        onClose={() => setIsAIModalOpen(false)}
+        onSuccess={handleAIGeneratorSuccess}
       />
     </div>
   );
