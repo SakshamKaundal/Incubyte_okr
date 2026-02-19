@@ -60,7 +60,7 @@ This app expects backend endpoints at:
 
 Make sure backend is running first:
 
-[Backend Documentation](https://github.com/SakshamKaundal/OKR_backend/blob/main/README.md)
+[Backend Documentation](https://github.com/SakshamKaundal/OKR_backend/blob/master/README.md)
 
 ## Notes
 
